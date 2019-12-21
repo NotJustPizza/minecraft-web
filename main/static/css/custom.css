@@ -1,0 +1,41 @@
+html, body {
+  min-height: 100vh;
+}
+
+body {
+  position: relative;
+  margin: 0;
+  padding-top: 100px;
+  background-image: url("../img/mountain.jpg");
+  background-color: #cccccc;
+  background-repeat: no-repeat;
+  background-size: cover;
+
+}
+
+footer {
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+}
+
+footer {
+  position: absolute;
+  bottom: 0;
+}
+
+.fa-twitter {
+  color: #66ddee;
+}
+
+.fa-discord {
+  color: #7289da;
+}
+
+.fa-twitter:hover, .fa-discord:hover {
+  color: white;
+}
+
+.navbar-bg-trans {
+  background: rgba(15, 18, 20, 0.8);
+}

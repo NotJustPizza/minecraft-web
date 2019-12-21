@@ -1,0 +1,112 @@
+{% load cache %}
+<!DOCTYPE html>
+<html lang="pl">
+    {% block head %}
+        <head>
+            {# Title #}
+            <title>{% block title %}{% endblock %}</title>
+
+            {# Meta #}
+            <meta charset="utf-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <meta content="Strona OSK Śląsk" name="description" />
+            <meta content="Kamil Sowiński" name="author" />
+
+            {# Favicon #}
+            <link rel="shortcut icon" href="{% static 'favicon.ico' %}" />
+
+            {% block stylesheets %}
+                {% cache 900 stylesheets %}
+                    {# Boostwatch Yeti #}
+                    <link rel="stylesheet" type="text/css" href="https://bootswatch.com/4/cosmo/bootstrap.min.css" />
+
+                    {# Font Awesome #}
+                    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css" />
+
+                    {# Tablesorter plugin #}
+                    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.1/css/theme.bootstrap_4.min.css" />
+
+                    {# CSS Customization #}
+                    <link rel="stylesheet" type="text/css" href="{% static 'css/custom.css' %}" />
+                {% endcache %}
+            {% endblock %}
+            {% block javascripts %}
+                {% cache 900 javascripts %}
+                    {# Basic bootstrap javascripts #}
+                    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+                    {# Tablesorter plugin #}
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.1/js/jquery.tablesorter.min.js"></script>
+                 {% endcache %}
+            {% endblock %}
+        </head>
+    {% endblock %}
+    {% block body %}
+        <body>
+            {% block header %}
+                <nav class="navbar navbar-expand-lg navbar-dark navbar-bg-trans fixed-top">
+                    <a class="navbar-brand" href="#">Hardplay.org</a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarCollapse">
+                        <ul class="navbar-nav mr-auto">
+                            {% for item in main_menu_items %}
+                                {% if item.is_active %}
+                                    <li class="nav-item active">
+                                        <a class="nav-link" href="{% url item.url %}">{{ item.name }} <span class="sr-only">(current)</span></a>
+                                    </li>
+                                {% else %}
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{% url item.url %}">{{ item.name }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                        {% if user.is_authenticated %}
+                            <ul class="navbar-nav navbar-right mr-4">
+                                <li class="nav-item">
+                                    <a class="navbar-link text-white" href="chuj">
+                                        <i class="fa fa-user"></i>&nbsp;
+                                        {{ user.name }}
+                                    </a>
+                                </li>
+                            </ul>
+                            <a class="btn btn-sm btn-outline-warning" href="{% url 'logout' %}" role="button">Logout</a>
+                        {% else %}
+                            <a class="btn btn-sm btn-outline-success" href="{% url 'login' %}" role="button">Login</a>
+                        {% endif %}
+                    </div>
+                </nav>
+            {% endblock %}
+
+            {% block content %}
+            {% endblock %}
+
+
+            <footer>
+                <div class="container-fluid">
+                    <div class="row py-2">
+                        <div class="col-lg-4 offset-lg-4 col-md-4 offset-md-4 col-7 offset-0 text-md-center text-xs-left text-white">
+                            Copyright &copy; {% now 'Y' %} Hardplay.org
+                        </div>
+                        <div class="col-lg-4 col-md-4 col-5 text-right">
+                            <a class="mx-2" href="#"><i class="fab fa-3x fa-twitter"></i></a>
+                            <a class="mx-2" href="#"><i class="fab fa-3x fa-discord"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+
+            <script type="application/javascript">
+                $(document).ready(function()
+                    {
+                        $(".tablesorter").tablesorter();
+                    }
+                );
+            </script>
+        </body>
+    {% endblock %}
+</html>

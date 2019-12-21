@@ -1,0 +1,11 @@
+# Ignore cache
+__pycache__
+
+# Ignore IDE 
+.idea
+
+# Ingore venv files
+venv/*
+
+# Ignore SQLite database
+db.sqlite3

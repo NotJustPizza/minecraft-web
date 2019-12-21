@@ -1,0 +1,65 @@
+{% extends "core/base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}Login using Minecraft Account{% endblock %}
+
+{% block content %}
+    <div class="container content">
+        <div class="row">
+            <div class="col-lg-6 offset-lg-3 col-md-8 offset-md-2 col-sm-10 offset-sm-1 col-12">
+                {% for error in form.non_field_errors %}
+                    <div class="alert alert-dismissable alert-danger margin-top-20">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                        <strong>{{ error|escape }}</strong>
+                    </div>
+                {% endfor %}
+
+                <form name="LoginForm" method="post">
+                    {% csrf_token %}
+                    <div class="card border-secondary">
+                        <div class="card-header bg-secondary">
+                            <h2 class="mt-2 text-white">Login using Minecraft Account</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="input-group">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fa fa-user"></i></span>
+                                    </div>
+                                    {% render_field form.username class="form-control" placeholder="Username" %}
+                                </div>
+
+                                <div class="input-group mt-2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fa fa-lock"></i></span>
+                                    </div>
+                                    {% render_field form.password class="form-control" placeholder="Password" %}
+                                </div>
+                            </div>
+
+                            <div class="row mt-md-3 mt-2">
+                                <div class="col-lg-9 col-md-8 col-sm-7 col-12 checkbox">
+                                    <label><input type="checkbox"> Keep me logged in</label>
+                                </div>
+                                <div class="col-lg-3 col-md-4 col-sm-5 col-12">
+                                    <input value="Login" type="submit" class="btn btn-lg btn-block btn-secondary float-right">
+                                    <input type="hidden" name="next" value="{{ next }}" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div><!--/row-->
+    </div>
+
+    {% block javascripts %}
+        {{ block.super }}
+        <script type="text/javascript">
+            $(function() {
+                // Setting focus
+                $('input[name="user[username]"]').focus();
+            });
+        </script>
+    {% endblock %}
+{% endblock %}
