@@ -1,11 +1,7 @@
 from ..settings.core import *
 
-ALLOWED_HOSTS += [
-    '127.0.0.1',
-]
-
 # Database
-# https://docs.djangoproject.com/en/2.2/ref/settings/#databases
+# https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
     'default': {
