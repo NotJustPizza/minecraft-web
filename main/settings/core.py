@@ -159,3 +159,10 @@ CACHES = {
 # Login
 LOGIN_URL = '/login'
 LOGIN_REDIRECT_URL = '/'
+
+# IP detection, CloudFlare compatible
+IPWARE_META_PRECEDENCE_ORDER = (
+    'CF-CPNNECTING-IP',
+    'X_FORWARDED_FOR',
+    'REMOTE_ADDR'
+)
