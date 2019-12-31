@@ -19,14 +19,14 @@ class JsonAPI:
         return hashlib.sha256(encoded_string).hexdigest()
 
     # Weird url containing json data as param
-    def make_url(self, method: str, args: dict = None) -> str:
+    def make_url(self, method: str, args: list = None) -> str:
         # Urlencode our request json data
         encoded_json = urllib.parse.quote(self.make_json(method, args))
 
         return f"http://{self.host}:{self.port}/api/2/call?json={encoded_json}"
 
     # Weird json data needed to make request
-    def make_json(self, method: str, args: dict = None) -> str:
+    def make_json(self, method: str, args: list = None) -> str:
         data = {
             'name': method,
             'arguments': args,
@@ -37,7 +37,7 @@ class JsonAPI:
         return json.dumps(data)
 
     # Call JsonAPI and return response
-    def call(self, method: str, args: dict = None) -> dict:
+    def call(self, method: str, args: list = None) -> dict:
         url = self.make_url(method, args)
 
         resp = requests.get(url)
