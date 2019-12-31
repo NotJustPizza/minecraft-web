@@ -157,7 +157,7 @@ CACHES = {
 }
 
 # Login
-LOGIN_URL = '/login'
+LOGIN_URL = '/login.html'
 LOGIN_REDIRECT_URL = '/'
 
 # IP detection, CloudFlare compatible

@@ -2,14 +2,24 @@ import json
 import hashlib
 import urllib.parse
 import requests
+from ..settings import JSONAPI as JSONAPI_SETTINGS
 
 
 class JsonAPI:
-    def __init__(self, host: str, port: int, username: str, password: str):
-        self.host = host
-        self.port = port
-        self.username = username
-        self.password = password
+    def __init__(
+        self,
+        host: str = None,
+        port: int = None,
+        username: str = None,
+        password: str = None,
+        settings_name: str = 'default'
+    ):
+        settings = JSONAPI_SETTINGS[settings_name]
+
+        self.host = host if host else settings['HOST']
+        self.port = port if port else settings['PORT']
+        self.username = username if username else settings['USERNAME']
+        self.password = password if password else settings['PASSWORD']
 
     # Weird sha256 encoded auth token
     def make_key(self, method: str) -> str:
