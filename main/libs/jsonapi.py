@@ -47,10 +47,10 @@ class JsonAPI:
         return json.dumps(data)
 
     # Call JsonAPI and return response
-    def call(self, method: str, args: list = None) -> dict:
+    def call(self, method: str, args: list = None, timeout: int = 2) -> dict:
         url = self.make_url(method, args)
 
-        resp = requests.get(url)
+        resp = requests.get(url, timeout=timeout)
 
         # We don't use multiple calls, so we probably need only first response
         return resp.json()[0]
