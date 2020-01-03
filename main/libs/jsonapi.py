@@ -62,10 +62,11 @@ class JsonAPI:
             data = resp.json()[0]
 
             # I know it's weird, but it's how this API works
-            if data['is_success'] or data['result'] != 'success':
+            if not data['is_success'] or data['result'] != 'success':
                 self.logger.error(f"JsonAPI: Request not successful for {url}")
             else:
-                result = data
+                # Actual result is in success field
+                result = data['success']
         except requests.exceptions.HTTPError as e:
             self.logger.error(f"JsonAPI: Http error - {e}")
         except requests.exceptions.ConnectionError as e:
