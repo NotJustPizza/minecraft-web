@@ -10,11 +10,6 @@ from main.libs.jsonapi import JsonAPI
 @login_required
 def inventory(request):
     jsonapi = JsonAPI()
-    resp = jsonapi.call('getPlayerInventory', [request.user.name])
-
-    if resp['is_success'] and resp['success']:
-        inv = resp['success']
-    else:
-        inv = None
+    inv = jsonapi.call('getPlayerInventory', [request.user.name])
 
     return render(request, 'profile/inventory.html', {'resp': inv})

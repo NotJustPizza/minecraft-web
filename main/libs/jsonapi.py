@@ -2,10 +2,13 @@ import json
 import hashlib
 import urllib.parse
 import requests
+import logging
 from ..settings import JSONAPI as JSONAPI_SETTINGS
 
 
 class JsonAPI:
+    logger = logging.getLogger(__name__)
+
     def __init__(
         self,
         host: str = None,
@@ -49,8 +52,29 @@ class JsonAPI:
     # Call JsonAPI and return response
     def call(self, method: str, args: list = None, timeout: int = 2) -> dict:
         url = self.make_url(method, args)
+        result = None
 
-        resp = requests.get(url, timeout=timeout)
+        try:
+            resp = requests.get(url, timeout=timeout)
+            # Raise error if not 2xx
+            resp.raise_for_status()
+            # We don't use multiple calls, so we probably need only first response
+            data = resp.json()[0]
 
-        # We don't use multiple calls, so we probably need only first response
-        return resp.json()[0]
+            # I know it's weird, but it's how this API works
+            if data['is_success'] or data['result'] != 'success':
+                self.logger.error(f"JsonAPI: Request not successful for {url}")
+            else:
+                result = data
+        except requests.exceptions.HTTPError as e:
+            self.logger.error(f"JsonAPI: Http error - {e}")
+        except requests.exceptions.ConnectionError as e:
+            self.logger.error(f"JsonAPI: Connection error - {e}")
+        except requests.exceptions.Timeout as e:
+            self.logger.error(f"JsonAPI: Timeout - {e}")
+        except requests.exceptions.TooManyRedirects as e:
+            self.logger.error(f"JsonAPI: Too many redirects - {e}")
+        except requests.exceptions.RequestException as e:
+            self.logger.error(f"JsonAPI: Unknown error - {e}")
+
+        return result
