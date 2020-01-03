@@ -1,0 +1,20 @@
+<td>
+    <div class="position-relative">
+        <img src="{{ item.image_url }}" class="img-item">
+        {% if item.amount > 1 %}
+            <span class="badge badge-pill badge-light rounded-pill">{{ item.amount }}</span>
+        {% endif %}
+        {% if item.durability > 0 %}
+            <div class="progress">
+                <div
+                    class="progress-bar {{ item.durability_class }}"
+                    role="progressbar"
+                    aria-valuenow="{{ item.durability_percent }}"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    style="width: {{ item.durability_percent }}%">
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</td>
