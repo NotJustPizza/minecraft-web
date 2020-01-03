@@ -23,6 +23,25 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'level': 'WARNING',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'main': {
+            'handlers': ['console']
+        },
+        'apps': {
+            'handlers': ['console']
+        },
+    },
+}
+
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
