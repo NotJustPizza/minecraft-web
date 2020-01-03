@@ -106,7 +106,7 @@ TEMPLATES = [
             ],
             # Load static files for all templates
             'builtins': [
-                'django.templatetags.static', # Updated to 3.0
+                'django.templatetags.static',  # Updated to 3.0
             ],
         },
     },
