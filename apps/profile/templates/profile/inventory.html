@@ -5,30 +5,39 @@
 {% block content %}
     <div class="container-fluid content">
         <div class="row justify-content-center align-items-center mt-lg-5">
-            <div class="col-auto">
-                <table class="table table-responsive table-bordered table-inventory">
-                    <tbody>
-                        {% for item in inv.armor %}
-                            {% if forloop.last %}
-                                <tr class="shield">
-                            {% else %}
-                                <tr>
-                            {% endif %}
-                                {% include 'profile/inventory_table_td.html' with item=item %}
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            {% if inv.inventory %}
+                <div class="col-auto mb-4 mb-lg-2">
+                    <table class="table table-responsive table-bordered table-inventory">
+                        <tbody>
+                            {% for item in inv.armor %}
+                                {% if forloop.last %}
+                                    <tr class="shield">
+                                {% else %}
+                                    <tr>
+                                {% endif %}
+                                    {% include 'profile/inventory_table_td.html' with item=item %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+            <div class="position-relative mb-4 mb-lg-2">
+                <img src="{{ skin_url }}" class="img-fluid img-skin">
+                <span class="badge badge-pill badge-light balance-badge rounded-pill">{{ balance|floatformat:2 }} $</span>
             </div>
-            <img src="{{ skin_url }}" class="img-fluid img-skin mx-1 mx-lg-3">
-            <div class="col-auto">
-               {% include 'profile/inventory_table.html' with items=inv.inventory %}
-            </div>
+            {% if inv.inventory %}
+                <div class="col-auto mb-4 mb-lg-2">
+                    {% include 'profile/inventory_table.html' with items=inv.inventory %}
+                </div>
+            {% endif %}
         </div>
+        {% if ender %}
         <div class="row justify-content-center align-items-center">
             <div class="col-auto">
               {% include 'profile/inventory_table.html' with items=ender %}
             </div>
         </div>
+        {% endif %}
     </div>
 {% endblock %}

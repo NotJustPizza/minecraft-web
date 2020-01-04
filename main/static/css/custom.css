@@ -43,6 +43,7 @@ footer {
 /* Classes related to displaying user inventories */
 table.table-inventory {
   border:12px solid #c6c6c6;
+  margin-bottom: 0;
   background-color: #8b8b8b;
 }
 
@@ -86,4 +87,12 @@ table.table-inventory .img-item {
     table.table-inventory .img-item {
         width: 32px;
     }
+}
+
+.balance-badge {
+  font-size: 1.4em;
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }

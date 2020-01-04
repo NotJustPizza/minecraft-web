@@ -10,6 +10,7 @@ from main.libs.jsonapi import JsonAPI
 @vary_on_cookie
 @login_required
 def inventory(request):
+    # Adds important data to items from API response
     def update_items(items: list):
         for i, item in enumerate(items):
             if item:
@@ -29,30 +30,41 @@ def inventory(request):
                     else:
                         items[i]['durability_class'] = 'bg-success'
             else:
+                # If there is no item then placeholder and set it's image to air
                 items[i] = {}
                 items[i]['image_url'] = static('img/depixel/item_or_block/air.png')
 
     jsonapi = JsonAPI()
+    jsonapi.add_url('getPlayerInventory', [request.user.name])
+    jsonapi.add_url('getPlayerEnderchest', [request.user.name])
+    jsonapi.add_url('econ.getBalance', [request.user.name + 's'])
+    results = jsonapi.call()
+    inv, ender, balance = results[0], results[1], results[2]
 
     # Inventory
-    inv = jsonapi.call('getPlayerInventory', [request.user.name])
-    update_items(inv['inventory'])
+    if inv:
+        update_items(inv['inventory'])
 
-    # Adjust order of slots
-    armor_slots = inv['inventory'][36:40][::-1]
-    shield_slot = inv['inventory'][40]
-    hotbar_slots = inv['inventory'][:9]
-    storage_slots = inv['inventory'][9:36]
+        # Adjust order of slots
+        armor_slots = inv['inventory'][36:40][::-1]
+        shield_slot = inv['inventory'][40]
+        hotbar_slots = inv['inventory'][:9]
+        storage_slots = inv['inventory'][9:36]
 
-    inv['inventory'] = storage_slots + hotbar_slots
-    # Override armor from API
-    inv['armor'] = armor_slots + [shield_slot]
+        inv['inventory'] = storage_slots + hotbar_slots
+        # Override armor data from API
+        inv['armor'] = armor_slots + [shield_slot]
 
     # Enderchest
-    ender = jsonapi.call('getPlayerEnderchest', [request.user.name])
-    update_items(ender)
+    if ender:
+        update_items(ender)
 
     # Skin API
-    skin_url = f"https://crafatar.com/renders/body/{request.user.uuid}?scale=8"
+    skin_url = f"https://visage.surgeplay.com/full/344/{request.user.uuid.hex}.png"
 
-    return render(request, 'profile/inventory.html', {'inv': inv, 'ender': ender, 'skin_url': skin_url})
+    return render(request, 'profile/inventory.html', {
+        'inv': inv,
+        'ender': ender,
+        'balance': balance,
+        'skin_url': skin_url
+    })
