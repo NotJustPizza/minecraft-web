@@ -2,12 +2,14 @@ import json
 import hashlib
 import urllib.parse
 import requests
+import concurrent.futures
 import logging
 from ..settings import JSONAPI as JSONAPI_SETTINGS
 
 
 class JsonAPI:
     logger = logging.getLogger(__name__)
+    urls = []
 
     def __init__(
         self,
@@ -49,33 +51,37 @@ class JsonAPI:
 
         return json.dumps(data)
 
-    # Call JsonAPI and return response
-    def call(self, method: str, args: list = None, timeout: int = 2) -> dict:
+    # Add url that will be called later
+    def add_url(self, method: str, args: list = None) -> None:
         url = self.make_url(method, args)
-        result = None
+        self.urls.append(url)
 
-        try:
-            resp = requests.get(url, timeout=timeout)
-            # Raise error if not 2xx
-            resp.raise_for_status()
-            # We don't use multiple calls, so we probably need only first response
-            data = resp.json()[0]
+    def load_url(self, url: str, timeout: int) -> requests.Response:
+        return requests.get(url, timeout=timeout)
 
-            # I know it's weird, but it's how this API works
-            if not data['is_success'] or data['result'] != 'success':
-                self.logger.error(f"JsonAPI: Request not successful for {url}")
-            else:
-                # Actual result is in success field
-                result = data['success']
-        except requests.exceptions.HTTPError as e:
-            self.logger.error(f"JsonAPI: Http error - {e}")
-        except requests.exceptions.ConnectionError as e:
-            self.logger.error(f"JsonAPI: Connection error - {e}")
-        except requests.exceptions.Timeout as e:
-            self.logger.error(f"JsonAPI: Timeout - {e}")
-        except requests.exceptions.TooManyRedirects as e:
-            self.logger.error(f"JsonAPI: Too many redirects - {e}")
-        except requests.exceptions.RequestException as e:
-            self.logger.error(f"JsonAPI: Unknown error - {e}")
+    # Call urls in parallel and return responses
+    def call(self, timeout: int = 2) -> dict:
+        results = {}
 
-        return result
+        with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+            future_to_i = {executor.submit(self.load_url, url, timeout): i for i, url in enumerate(self.urls)}
+            for future in concurrent.futures.as_completed(future_to_i):
+                i = future_to_i[future]
+
+                # By default we return None is something goes wrong
+                results[i] = None
+
+                try:
+                    # We don't use multicalls feature so we only need first element from json
+                    data = future.result().json()[0]
+
+                    # I know it's weird, but it's how this API works
+                    if not data['is_success'] or data['result'] != 'success':
+                        self.logger.error(f"JsonAPI: Request not successful")
+                    else:
+                        # Actual result is in success field
+                        results[i] = data['success']
+                except Exception as exception:
+                    self.logger.error(f"JsonAPI: {exception}")
+
+        return results
