@@ -21,23 +21,21 @@
                         </tbody>
                     </table>
                 </div>
-            {% endif %}
-            <div class="position-relative mb-4 mb-lg-2">
-                <img src="{{ skin_url }}" class="img-fluid img-skin">
-                <span class="badge badge-pill badge-light balance-badge rounded-pill">{{ balance|floatformat:2 }} $</span>
-            </div>
-            {% if inv.inventory %}
+                <div class="position-relative mb-4 mb-lg-2">
+                    <img src="{{ skin_url }}" class="img-fluid img-skin">
+                    <span class="badge badge-pill badge-light balance-badge rounded-pill">{{ balance|floatformat:2 }} $</span>
+                </div>
                 <div class="col-auto mb-4 mb-lg-2">
                     {% include 'profile/inventory_table.html' with items=inv.inventory %}
                 </div>
             {% endif %}
         </div>
         {% if ender %}
-        <div class="row justify-content-center align-items-center">
-            <div class="col-auto">
-              {% include 'profile/inventory_table.html' with items=ender %}
+            <div class="row justify-content-center align-items-center">
+                <div class="col-auto">
+                  {% include 'profile/inventory_table.html' with items=ender %}
+                </div>
             </div>
-        </div>
         {% endif %}
     </div>
 {% endblock %}

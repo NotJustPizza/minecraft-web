@@ -4,7 +4,8 @@ import urllib.parse
 import requests
 import concurrent.futures
 import logging
-from ..settings import JSONAPI as JSONAPI_SETTINGS
+from collections import defaultdict
+from main.settings import JSONAPI as JSONAPI_SETTINGS
 
 
 class JsonAPI:
@@ -52,36 +53,35 @@ class JsonAPI:
         return json.dumps(data)
 
     # Add url that will be called later
-    def add_url(self, method: str, args: list = None) -> None:
+    def add_url(self, method: str, args: list = None):
         url = self.make_url(method, args)
         self.urls.append(url)
 
-    def load_url(self, url: str, timeout: int) -> requests.Response:
+        return self
+
+    @staticmethod
+    def load_url(url: str, timeout: int) -> requests.Response:
         return requests.get(url, timeout=timeout)
 
     # Call urls in parallel and return responses
     def call(self, timeout: int = 2) -> dict:
-        results = {}
+        # By default we return None is something goes wrong
+        results = defaultdict(lambda: None)
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
-            future_to_i = {executor.submit(self.load_url, url, timeout): i for i, url in enumerate(self.urls)}
-            for future in concurrent.futures.as_completed(future_to_i):
-                i = future_to_i[future]
+            futures_to_ids = {executor.submit(self.load_url, url, timeout): i for i, url in enumerate(self.urls)}
+            for future in concurrent.futures.as_completed(futures_to_ids):
+                future_id = futures_to_ids[future]
 
-                # By default we return None is something goes wrong
-                results[i] = None
+                # We don't use multicalls feature so we only need first element from json
+                data = future.result().json()[0]
 
-                try:
-                    # We don't use multicalls feature so we only need first element from json
-                    data = future.result().json()[0]
-
-                    # I know it's weird, but it's how this API works
-                    if not data['is_success'] or data['result'] != 'success':
-                        self.logger.error(f"JsonAPI: Request not successful")
-                    else:
-                        # Actual result is in success field
-                        results[i] = data['success']
-                except Exception as exception:
-                    self.logger.error(f"JsonAPI: {exception}")
+                # I know it's weird, but it's how this API works
+                if not data['is_success'] or data['result'] != 'success':
+                    self.logger.error(f"JsonAPI: Request not successful")
+                    raise requests.exceptions.HTTPError('Request not successful')
+                else:
+                    # Actual result is in success field
+                    results[future_id] = data['success']
 
         return results
