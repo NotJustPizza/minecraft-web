@@ -21,11 +21,13 @@ def inventory(request):
     inv, ender, balance = results[0], results[1], results[2]
 
     # Inventory
-    add_data_to_items(inv['inventory'])
-    change_inv_format(inv)
+    if inv and inv['inventory']:
+        add_data_to_items(inv['inventory'])
+        change_inv_format(inv)
 
     # Enderchest
-    add_data_to_items(ender)
+    if ender:
+        add_data_to_items(ender)
 
     return render(request, 'profile/inventory.html', {
         'inv': inv,
